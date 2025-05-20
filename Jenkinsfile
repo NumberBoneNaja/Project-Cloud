@@ -1,20 +1,27 @@
 pipeline {
     agent any
     stages {
-        
-        stage('Build') {
+        stage('Clean Containers') {
             steps {
-                echo "Building project..."
+                sh 'docker compose down'
             }
         }
-        stage('Test') {
+
+        stage('Build Frontend and Services') {
             steps {
-                echo "Running tests..."
+                sh 'docker compose build frontend user-service recipe-service rating-service favorite-service api-gateway reverse-proxy'
             }
         }
-        stage('Deploy') {
+
+        stage('Start Containers') {
             steps {
-                echo "Deploying..."
+                sh 'docker compose up -d frontend user-service recipe-service rating-service favorite-service api-gateway reverse-proxy'
+            }
+        }
+
+        stage('Check Status') {
+            steps {
+                sh 'docker ps'
             }
         }
     }
